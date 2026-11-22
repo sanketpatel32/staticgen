@@ -24,10 +24,10 @@ def render(post_md, template):
     lines = post_md.strip().split("\n")
     out = []
     for line in lines:
-        if line.startswith("# "):
-            out.append("<h1>" + line[2:] + "</h1>")
-        elif line.startswith("## "):
-            out.append("<h2>" + line[3:] + "</h2>")
+        heading = re.match(r"^(#{1,6}) (.*)", line)
+        if heading:
+            level = len(heading.group(1))
+            out.append("<h{0}>{1}</h{0}>".format(level, heading.group(2)))
         else:
             line = line.replace("**", "<strong>", 1).replace("**", "</strong>", 1)
             out.append("<p>" + line + "</p>")

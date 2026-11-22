@@ -100,6 +100,19 @@ def test_non_markdown_files_and_directories_are_ignored(tmp_path):
     assert sorted(p.name for p in out.iterdir()) == ["hello.html"]
 
 
+def test_heading_levels_three_through_six(tmp_path):
+    src = make_src(tmp_path)
+    (src / "headings.md").write_text("# Title\n\n## Two\n\n### Deep\n\n###### Six\n")
+    tpl = make_template(tmp_path)
+    out = tmp_path / "out"
+    result = run(src, out, "--template", tpl, cwd=tmp_path)
+    assert result.returncode == 0, result.stderr
+    html = (out / "headings.html").read_text()
+    assert "<h2>Two</h2>" in html
+    assert "<h3>Deep</h3>" in html
+    assert "<h6>Six</h6>" in html
+
+
 def test_uppercase_md_extension_is_built(tmp_path):
     src = make_src(tmp_path)
     (src / "Notes.MD").write_text("# Notes\n\nUpper extension.\n")
